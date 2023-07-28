@@ -1,0 +1,620 @@
+import "strings"
+
+providers = {
+	"google": {
+		"alias": "",
+		"config": {
+			"project": {
+				"references": [
+					"var.project",
+				],
+			},
+			"region": {
+				"references": [
+					"var.region",
+				],
+			},
+			"zone": {
+				"references": [
+					"var.zone",
+				],
+			},
+		},
+		"module_address":      "",
+		"name":                "google",
+		"provider_config_key": "google",
+		"version_constraint":  "",
+	},
+	"google-beta": {
+		"alias": "",
+		"config": {
+			"project": {
+				"references": [
+					"var.project",
+				],
+			},
+			"region": {
+				"references": [
+					"var.region",
+				],
+			},
+			"zone": {
+				"references": [
+					"var.zone",
+				],
+			},
+		},
+		"module_address":      "",
+		"name":                "google-beta",
+		"provider_config_key": "google-beta",
+		"version_constraint":  "",
+	},
+	"random": {
+		"alias":               "",
+		"config":              {},
+		"module_address":      "",
+		"name":                "random",
+		"provider_config_key": "random",
+		"version_constraint":  "",
+	},
+}
+
+resources = {
+	"data.google_project.test_composer_serviceaccount": {
+		"address":             "data.google_project.test_composer_serviceaccount",
+		"config":              {},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "data",
+		"module_address":      "",
+		"name":                "test_composer_serviceaccount",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_project",
+	},
+	"google_composer_environment.test_composer_serviceaccount": {
+		"address": "google_composer_environment.test_composer_serviceaccount",
+		"config": {
+			"config": [
+				{
+					"node_config": [
+						{
+							"machine_type": {
+								"constant_value": "e2-medium",
+							},
+							"network": {
+								"references": [
+									"google_compute_network.private_network",
+								],
+							},
+							"subnetwork": {
+								"references": [
+									"google_compute_subnetwork.poc-subnet",
+								],
+							},
+							"zone": {
+								"references": [
+									"var.zone",
+								],
+							},
+						},
+					],
+					"node_count": {
+						"constant_value": 3,
+					},
+					"private_environment_config": [
+						{
+							"cloud_sql_ipv4_cidr_block": {
+								"constant_value": "10.0.0.0/12",
+							},
+							"enable_private_endpoint": {
+								"constant_value": true,
+							},
+							"master_ipv4_cidr_block": {
+								"constant_value": "172.16.22.0/23",
+							},
+							"web_server_ipv4_cidr_block": {
+								"constant_value": "172.31.244.0/24",
+							},
+						},
+					],
+				},
+			],
+			"name": {
+				"references": [
+					"local.test_composer_serviceaccount",
+				],
+			},
+			"region": {
+				"references": [
+					"var.region",
+				],
+			},
+		},
+		"count": {},
+		"depends_on": [
+			"google_project_service.enable_composer_api",
+		],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "test_composer_serviceaccount",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_composer_environment",
+	},
+	"google_compute_address.default-cloud-nat-ip": {
+		"address": "google_compute_address.default-cloud-nat-ip",
+		"config": {
+			"name": {
+				"constant_value": "cloud-nat-ip",
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "default-cloud-nat-ip",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_compute_address",
+	},
+	"google_compute_firewall.allow_ssh": {
+		"address": "google_compute_firewall.allow_ssh",
+		"config": {
+			"allow": [
+				{
+					"ports": {
+						"constant_value": [
+							"22",
+						],
+					},
+					"protocol": {
+						"constant_value": "tcp",
+					},
+				},
+			],
+			"direction": {
+				"constant_value": "INGRESS",
+			},
+			"name": {
+				"references": [
+					"var.branchname",
+					"random_id.id",
+				],
+			},
+			"network": {
+				"references": [
+					"google_compute_network.private_network",
+				],
+			},
+			"target_tags": {
+				"constant_value": [
+					"ssh-enabled",
+				],
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "allow_ssh",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_compute_firewall",
+	},
+	"google_compute_firewall.poc-firewall-rule": {
+		"address": "google_compute_firewall.poc-firewall-rule",
+		"config": {
+			"allow": [
+				{
+					"ports": {
+						"constant_value": [
+							"22",
+						],
+					},
+					"protocol": {
+						"constant_value": "tcp",
+					},
+				},
+			],
+			"description": {
+				"constant_value": "A firewall rule to allow SSH access from IAP  to all instances",
+			},
+			"name": {
+				"references": [
+					"var.branchname",
+					"random_id.id",
+				],
+			},
+			"network": {
+				"references": [
+					"google_compute_network.private_network",
+				],
+			},
+			"source_ranges": {
+				"constant_value": [
+					"35.235.240.0/20",
+				],
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "poc-firewall-rule",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_compute_firewall",
+	},
+	"google_compute_global_address.private_ip_address": {
+		"address": "google_compute_global_address.private_ip_address",
+		"config": {
+			"address_type": {
+				"constant_value": "INTERNAL",
+			},
+			"name": {
+				"references": [
+					"local.private_ip_name",
+				],
+			},
+			"network": {
+				"references": [
+					"google_compute_network.private_network",
+				],
+			},
+			"prefix_length": {
+				"constant_value": 16,
+			},
+			"purpose": {
+				"constant_value": "VPC_PEERING",
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "private_ip_address",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_compute_global_address",
+	},
+	"google_compute_network.private_network": {
+		"address": "google_compute_network.private_network",
+		"config": {
+			"auto_create_subnetworks": {
+				"constant_value": "false",
+			},
+			"name": {
+				"references": [
+					"local.private_network_name",
+				],
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "private_network",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_compute_network",
+	},
+	"google_compute_route.default_internet_route": {
+		"address": "google_compute_route.default_internet_route",
+		"config": {
+			"dest_range": {
+				"constant_value": "0.0.0.0/0",
+			},
+			"name": {
+				"constant_value": "default-internet-route",
+			},
+			"network": {
+				"references": [
+					"google_compute_network.private_network",
+				],
+			},
+			"next_hop_gateway": {
+				"constant_value": "default-internet-gateway",
+			},
+			"priority": {
+				"constant_value": 1000,
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "default_internet_route",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_compute_route",
+	},
+	"google_compute_router.default_router": {
+		"address": "google_compute_router.default_router",
+		"config": {
+			"bgp": [
+				{
+					"asn": {
+						"constant_value": 64514,
+					},
+				},
+			],
+			"name": {
+				"constant_value": "default-cloud-router",
+			},
+			"network": {
+				"references": [
+					"google_compute_network.private_network",
+				],
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "default_router",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_compute_router",
+	},
+	"google_compute_router_nat.default-cloud-nat-gw": {
+		"address": "google_compute_router_nat.default-cloud-nat-gw",
+		"config": {
+			"name": {
+				"constant_value": "default-cloud-natgw",
+			},
+			"nat_ip_allocate_option": {
+				"constant_value": "MANUAL_ONLY",
+			},
+			"nat_ips": {
+				"references": [
+					"google_compute_address.default-cloud-nat-ip",
+				],
+			},
+			"router": {
+				"references": [
+					"google_compute_router.default_router",
+				],
+			},
+			"source_subnetwork_ip_ranges_to_nat": {
+				"constant_value": "ALL_SUBNETWORKS_ALL_IP_RANGES",
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "default-cloud-nat-gw",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_compute_router_nat",
+	},
+	"google_compute_subnetwork.poc-subnet": {
+		"address": "google_compute_subnetwork.poc-subnet",
+		"config": {
+			"description": {
+				"constant_value": "The shared service subnetwork used for infrastructure",
+			},
+			"ip_cidr_range": {
+				"constant_value": "10.3.0.0/19",
+			},
+			"name": {
+				"references": [
+					"local.private_subnetwork",
+				],
+			},
+			"network": {
+				"references": [
+					"google_compute_network.private_network",
+				],
+			},
+			"region": {
+				"references": [
+					"var.region",
+				],
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "poc-subnet",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_compute_subnetwork",
+	},
+	"google_project_iam_member.test_composer_serviceaccount": {
+		"address": "google_project_iam_member.test_composer_serviceaccount",
+		"config": {
+			"member": {
+				"references": [
+					"google_service_account.test_composer_serviceaccount",
+				],
+			},
+			"role": {
+				"constant_value": "roles/composer.worker",
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "test_composer_serviceaccount",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_project_iam_member",
+	},
+	"google_project_service.enable_composer_api": {
+		"address": "google_project_service.enable_composer_api",
+		"config": {
+			"disable_dependent_services": {
+				"constant_value": true,
+			},
+			"project": {
+				"references": [
+					"var.project",
+				],
+			},
+			"service": {
+				"constant_value": "composer.googleapis.com",
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "enable_composer_api",
+		"provider_config_key": "google",
+		"provisioners": [
+			{
+				"config": {
+					"command": {
+						"constant_value": "sleep 60",
+					},
+				},
+				"index":            0,
+				"resource_address": "google_project_service.enable_composer_api",
+				"type":             "local-exec",
+			},
+		],
+		"type": "google_project_service",
+	},
+	"google_service_account.test_composer_serviceaccount": {
+		"address": "google_service_account.test_composer_serviceaccount",
+		"config": {
+			"account_id": {
+				"references": [
+					"local.default_test_composer_serviceaccount",
+				],
+			},
+			"display_name": {
+				"constant_value": " Service Account for Composer Environment",
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "test_composer_serviceaccount",
+		"provider_config_key": "google",
+		"provisioners":        [],
+		"type":                "google_service_account",
+	},
+	"google_service_networking_connection.private_vpc_connection": {
+		"address": "google_service_networking_connection.private_vpc_connection",
+		"config": {
+			"network": {
+				"references": [
+					"google_compute_network.private_network",
+				],
+			},
+			"reserved_peering_ranges": {
+				"references": [
+					"google_compute_global_address.private_ip_address",
+				],
+			},
+			"service": {
+				"constant_value": "servicenetworking.googleapis.com",
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "private_vpc_connection",
+		"provider_config_key": "google-beta",
+		"provisioners":        [],
+		"type":                "google_service_networking_connection",
+	},
+	"random_id.id": {
+		"address": "random_id.id",
+		"config": {
+			"byte_length": {
+				"constant_value": 8,
+			},
+		},
+		"count":               {},
+		"depends_on":          [],
+		"for_each":            {},
+		"mode":                "managed",
+		"module_address":      "",
+		"name":                "id",
+		"provider_config_key": "random",
+		"provisioners":        [],
+		"type":                "random_id",
+	},
+}
+
+provisioners = {
+	"google_project_service.enable_composer_api:0": {
+		"config": {
+			"command": {
+				"constant_value": "sleep 60",
+			},
+		},
+		"index":            0,
+		"resource_address": "google_project_service.enable_composer_api",
+		"type":             "local-exec",
+	},
+}
+
+variables = {
+	"branchname": {
+		"default":        "master",
+		"description":    "Branch name for testing",
+		"module_address": "",
+		"name":           "branchname",
+	},
+	"name_prefix": {
+		"default":        "sentinel",
+		"description":    "The name prefix for the database instance. Will be appended with a random string. Use lowercase letters, numbers, and hyphens. Start with a letter.",
+		"module_address": "",
+		"name":           "name_prefix",
+	},
+	"project": {
+		"default":        "vtltd-dev",
+		"description":    "The project ID to host the database in.",
+		"module_address": "",
+		"name":           "project",
+	},
+	"region": {
+		"default":        "us-west1",
+		"description":    "The region to host the database in.",
+		"module_address": "",
+		"name":           "region",
+	},
+	"zone": {
+		"default":        "us-west2-a",
+		"description":    "The zoneto host the database in.",
+		"module_address": "",
+		"name":           "zone",
+	},
+}
+
+outputs = {}
+
+module_calls = {}
+
+strip_index = func(addr) {
+	s = strings.split(addr, ".")
+	for s as i, v {
+		s[i] = strings.split(v, "[")[0]
+	}
+
+	return strings.join(s, ".")
+}

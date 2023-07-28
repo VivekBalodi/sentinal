@@ -1,0 +1,76 @@
+/*# this policy uses the sentinel tfplan/v2 import for terraform
+import "tfplan/v2" as tfplan
+import "strings"
+import "types"
+
+print ("Policy Validation Rule - Ensure Cloud Composer Cloud SQL uses approved and reserved IP Range For Cloud SQL")
+
+ cloud_sql_ipv4_cidr_block_list = [
+
+]
+
+allComposerResources = filter tfplan.resource_changes as _, resource_changes {
+	resource_changes.type is "google_composer_environment" and
+	resource_changes.mode is "managed" and
+	resource_changes.change.actions not contains "delete"
+}
+
+deny_ConfigBlockMissing = rule {
+	all allComposerResources as _, rc {
+		keys(rc.change.after) contains "config"
+	}
+}
+
+deny_PrivEnvConfigBlockMissing = rule when deny_ConfigBlockMissing is true {
+	all allComposerResources as _, rc {
+		all rc.change.after.config as _, sp {
+			keys(sp) contains "private_environment_config"
+		}
+	}
+}
+
+RestrictComposerIpv4Cidr_rule = rule when deny_PrivEnvConfigBlockMissing is true {
+	all allComposerResources as _, rc {
+		all rc.change.after.config as _, sp {
+			all sp.private_environment_config as _, ac {
+				ac contains "cloud_sql_ipv4_cidr_block" and
+					ac.cloud_sql_ipv4_cidr_block in cloud_sql_ipv4_cidr_block_list
+			}
+		}
+	}
+}
+
+v = strings.split(tfplan.terraform_version, ".")
+version_major = int(v[1])
+version_minor = int(v[2])
+
+main = rule {
+	deny_ConfigBlockMissing and
+	deny_PrivEnvConfigBlockMissing and
+	RestrictComposerIpv4Cidr_rule and
+	version_major >= 13 and
+	version_minor >= 0
+}
+*/
+
+#RestrictComposerIpv4Cidr
+import "tfplan-functions" as plan
+
+ cloud_sql_ipv4_cidr_block_list = ["192.0.0.1/24"]
+
+ attr = "config.0.private_environment_config.0.cloud_sql_ipv4_cidr_block"
+
+allComposerResources = plan.find_resources("google_composer_environment")
+
+
+violatingcloud_sql_ipv4_cidr_block_list =
+plan.filter_attribute_not_in_list(allComposerResources,
+  attr,cloud_sql_ipv4_cidr_block_list, true)
+
+ violations = length(violatingcloud_sql_ipv4_cidr_block_list["messages"])
+
+ # Main rule
+main = rule {
+violations is 0
+
+}

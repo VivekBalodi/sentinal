@@ -1,0 +1,69 @@
+
+
+#Not is scope
+
+# this policy uses the sentinel tfplan/v2 import for terraform
+import "tfplan/v2" as tfplan
+import "strings"
+import "types"
+import "json"
+
+print (" Policy Validation Rule - Only allow Cloud  curated IAM Roles with least privilege from link below to Cloud Composer")
+
+privileged_roles = [
+	"(?i)roles/viewer",
+	"(?i)roles/editor",
+	"(?i)roles/owner",
+]
+
+allComposerResources = filter tfplan.resource_changes as _, resource_changes {
+	resource_changes.type is "google_project_iam_member" and
+		resource_changes.mode is "managed" and
+		(resource_changes.change.actions contains "create" or
+			resource_changes.change.actions is ["update"])
+}
+
+allIAMResources = filter tfplan.resource_changes as _, resource_changes {
+	resource_changes.type matches "(.*)_iam_(binding|member|audit_config)" and
+		resource_changes.mode is "managed" and
+		(resource_changes.change.actions contains "create" or
+			resource_changes.change.actions is ["update"])
+}
+
+allIAMPolicyResources = filter tfplan.resource_changes as _, resource_changes {
+	resource_changes.type matches "(.*)_iam_policy" and
+		resource_changes.mode is "managed" and
+		(resource_changes.change.actions contains "create" or
+			resource_changes.change.actions is ["update"])
+}
+
+print(allIAMResources)
+
+RestrictPrimitiveIamRole_rule = rule {
+	all allIAMResources as _, rc {
+		all privileged_roles as _, role {
+			rc.change.after.role not matches role
+		}
+	}
+}
+
+RestrictPolicyPrimitiveIamRole_rule = rule {
+	all allIAMPolicyResources as _, rc {
+		all json.unmarshal(resource.change.after.policy_data).bindings as _, binding {
+			all privileged_roles as _, role {
+				binding.role not matches role
+			}
+		}
+	}
+}
+
+v = strings.split(tfplan.terraform_version, ".")
+version_major = int(v[1])
+version_minor = int(v[2])
+
+main = rule {
+	RestrictPrimitiveIamRole_rule and
+	RestrictPolicyPrimitiveIamRole_rule and
+	version_major >= 13 and
+	version_minor >= 0
+}

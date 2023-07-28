@@ -1,0 +1,554 @@
+terraform_version = "0.14.4"
+
+planned_values = {
+	"outputs": {},
+	"resources": {
+		"google_project_iam_audit_config.composer-enable-audit-logging": {
+			"address":        "google_project_iam_audit_config.composer-enable-audit-logging",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          null,
+			"mode":           "managed",
+			"module_address": "",
+			"name":           "composer-enable-audit-logging",
+			"provider_name":  "registry.terraform.io/hashicorp/google",
+			"tainted":        false,
+			"type":           "google_project_iam_audit_config",
+			"values": {
+				"audit_log_config": [
+					{
+						"exempted_members": [],
+						"log_type":         "ADMIN_READ",
+					},
+					{
+						"exempted_members": [],
+						"log_type":         "DATA_READ",
+					},
+					{
+						"exempted_members": [],
+						"log_type":         "DATA_WRITE",
+					},
+				],
+				"project": "vtltd-dev",
+				"service": "composer.googleapis.com",
+			},
+		},
+		"random_id.id": {
+			"address":        "random_id.id",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          null,
+			"mode":           "managed",
+			"module_address": "",
+			"name":           "id",
+			"provider_name":  "registry.terraform.io/hashicorp/random",
+			"tainted":        false,
+			"type":           "random_id",
+			"values": {
+				"b64_std":     "nGbZSpipMuk=",
+				"b64_url":     "nGbZSpipMuk",
+				"byte_length": 8,
+				"dec":         "11269934031953277673",
+				"hex":         "9c66d94a98a932e9",
+				"id":          "nGbZSpipMuk",
+				"keepers":     null,
+				"prefix":      null,
+			},
+		},
+	},
+}
+
+variables = {
+	"branchname": {
+		"name":  "branchname",
+		"value": "master",
+	},
+	"name_prefix": {
+		"name":  "name_prefix",
+		"value": "sentinel",
+	},
+	"project": {
+		"name":  "project",
+		"value": "vtltd-dev",
+	},
+	"region": {
+		"name":  "region",
+		"value": "us-west2",
+	},
+	"zone": {
+		"name":  "zone",
+		"value": "us-west2-a",
+	},
+}
+
+resource_changes = {
+	"google_project_iam_audit_config.composer-enable-audit-logging": {
+		"address": "google_project_iam_audit_config.composer-enable-audit-logging",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"audit_log_config": [
+					{
+						"exempted_members": [],
+						"log_type":         "ADMIN_READ",
+					},
+					{
+						"exempted_members": [],
+						"log_type":         "DATA_READ",
+					},
+					{
+						"exempted_members": [],
+						"log_type":         "DATA_WRITE",
+					},
+				],
+				"project": "vtltd-dev",
+				"service": "composer.googleapis.com",
+			},
+			"after_unknown": {
+				"audit_log_config": [
+					{
+						"exempted_members": [],
+					},
+					{
+						"exempted_members": [],
+					},
+					{
+						"exempted_members": [],
+					},
+				],
+				"etag": true,
+				"id":   true,
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          null,
+		"mode":           "managed",
+		"module_address": "",
+		"name":           "composer-enable-audit-logging",
+		"provider_name":  "registry.terraform.io/hashicorp/google",
+		"type":           "google_project_iam_audit_config",
+	},
+	"google_project_iam_audit_config.composer-no-audit-logging": {
+		"address": "google_project_iam_audit_config.composer-no-audit-logging",
+		"change": {
+			"actions": [
+				"delete",
+			],
+			"after":         null,
+			"after_unknown": {},
+			"before": {
+				"audit_log_config": [
+					{
+						"exempted_members": [
+							"domain:valence-technologies.com",
+						],
+						"log_type": "DATA_READ",
+					},
+				],
+				"etag":    "BwW6lC13Ps4=",
+				"id":      "vtltd-dev/audit_config/composer.googleapis.com",
+				"project": "vtltd-dev",
+				"service": "composer.googleapis.com",
+			},
+		},
+		"deposed":        "",
+		"index":          null,
+		"mode":           "managed",
+		"module_address": "",
+		"name":           "composer-no-audit-logging",
+		"provider_name":  "registry.terraform.io/hashicorp/google",
+		"type":           "google_project_iam_audit_config",
+	},
+	"random_id.id": {
+		"address": "random_id.id",
+		"change": {
+			"actions": [
+				"no-op",
+			],
+			"after": {
+				"b64_std":     "nGbZSpipMuk=",
+				"b64_url":     "nGbZSpipMuk",
+				"byte_length": 8,
+				"dec":         "11269934031953277673",
+				"hex":         "9c66d94a98a932e9",
+				"id":          "nGbZSpipMuk",
+				"keepers":     null,
+				"prefix":      null,
+			},
+			"after_unknown": {},
+			"before": {
+				"b64_std":     "nGbZSpipMuk=",
+				"b64_url":     "nGbZSpipMuk",
+				"byte_length": 8,
+				"dec":         "11269934031953277673",
+				"hex":         "9c66d94a98a932e9",
+				"id":          "nGbZSpipMuk",
+				"keepers":     null,
+				"prefix":      null,
+			},
+		},
+		"deposed":        "",
+		"index":          null,
+		"mode":           "managed",
+		"module_address": "",
+		"name":           "id",
+		"provider_name":  "registry.terraform.io/hashicorp/random",
+		"type":           "random_id",
+	},
+}
+
+output_changes = {}
+
+raw = {
+	"configuration": {
+		"provider_config": {
+			"google": {
+				"expressions": {
+					"project": {
+						"references": [
+							"var.project",
+						],
+					},
+					"region": {
+						"references": [
+							"var.region",
+						],
+					},
+					"zone": {
+						"references": [
+							"var.zone",
+						],
+					},
+				},
+				"name": "google",
+			},
+			"google-beta": {
+				"expressions": {
+					"project": {
+						"references": [
+							"var.project",
+						],
+					},
+					"region": {
+						"references": [
+							"var.region",
+						],
+					},
+					"zone": {
+						"references": [
+							"var.zone",
+						],
+					},
+				},
+				"name": "google-beta",
+			},
+			"random": {
+				"name": "random",
+			},
+		},
+		"root_module": {
+			"resources": [
+				{
+					"address": "google_project_iam_audit_config.composer-enable-audit-logging",
+					"expressions": {
+						"audit_log_config": [
+							{
+								"log_type": {
+									"constant_value": "DATA_READ",
+								},
+							},
+							{
+								"log_type": {
+									"constant_value": "DATA_WRITE",
+								},
+							},
+							{
+								"log_type": {
+									"constant_value": "ADMIN_READ",
+								},
+							},
+						],
+						"project": {
+							"references": [
+								"var.project",
+							],
+						},
+						"service": {
+							"constant_value": "composer.googleapis.com",
+						},
+					},
+					"mode":                "managed",
+					"name":                "composer-enable-audit-logging",
+					"provider_config_key": "google",
+					"schema_version":      0,
+					"type":                "google_project_iam_audit_config",
+				},
+				{
+					"address": "random_id.id",
+					"expressions": {
+						"byte_length": {
+							"constant_value": 8,
+						},
+					},
+					"mode":                "managed",
+					"name":                "id",
+					"provider_config_key": "random",
+					"schema_version":      0,
+					"type":                "random_id",
+				},
+			],
+			"variables": {
+				"branchname": {
+					"default":     "master",
+					"description": "Branch name for testing",
+				},
+				"name_prefix": {
+					"default":     "sentinel",
+					"description": "The name prefix for the database instance. Will be appended with a random string. Use lowercase letters, numbers, and hyphens. Start with a letter.",
+				},
+				"project": {
+					"default":     "vtltd-dev",
+					"description": "The project ID to host the database in.",
+				},
+				"region": {
+					"default":     "us-west2",
+					"description": "The region to host the database in.",
+				},
+				"zone": {
+					"default":     "us-west2-a",
+					"description": "The zoneto host the database in.",
+				},
+			},
+		},
+	},
+	"format_version": "0.1",
+	"planned_values": {
+		"root_module": {
+			"resources": [
+				{
+					"address":        "google_project_iam_audit_config.composer-enable-audit-logging",
+					"mode":           "managed",
+					"name":           "composer-enable-audit-logging",
+					"provider_name":  "registry.terraform.io/hashicorp/google",
+					"schema_version": 0,
+					"type":           "google_project_iam_audit_config",
+					"values": {
+						"audit_log_config": [
+							{
+								"exempted_members": [],
+								"log_type":         "ADMIN_READ",
+							},
+							{
+								"exempted_members": [],
+								"log_type":         "DATA_READ",
+							},
+							{
+								"exempted_members": [],
+								"log_type":         "DATA_WRITE",
+							},
+						],
+						"project": "vtltd-dev",
+						"service": "composer.googleapis.com",
+					},
+				},
+				{
+					"address":        "random_id.id",
+					"mode":           "managed",
+					"name":           "id",
+					"provider_name":  "registry.terraform.io/hashicorp/random",
+					"schema_version": 0,
+					"type":           "random_id",
+					"values": {
+						"b64_std":     "nGbZSpipMuk=",
+						"b64_url":     "nGbZSpipMuk",
+						"byte_length": 8,
+						"dec":         "11269934031953277673",
+						"hex":         "9c66d94a98a932e9",
+						"id":          "nGbZSpipMuk",
+						"keepers":     null,
+						"prefix":      null,
+					},
+				},
+			],
+		},
+	},
+	"prior_state": {
+		"format_version":    "0.1",
+		"terraform_version": "0.14.4",
+		"values": {
+			"root_module": {
+				"resources": [
+					{
+						"address":        "google_project_iam_audit_config.composer-no-audit-logging",
+						"mode":           "managed",
+						"name":           "composer-no-audit-logging",
+						"provider_name":  "registry.terraform.io/hashicorp/google",
+						"schema_version": 0,
+						"type":           "google_project_iam_audit_config",
+						"values": {
+							"audit_log_config": [
+								{
+									"exempted_members": [
+										"domain:valence-technologies.com",
+									],
+									"log_type": "DATA_READ",
+								},
+							],
+							"etag":    "BwW6lC13Ps4=",
+							"id":      "vtltd-dev/audit_config/composer.googleapis.com",
+							"project": "vtltd-dev",
+							"service": "composer.googleapis.com",
+						},
+					},
+					{
+						"address":        "random_id.id",
+						"mode":           "managed",
+						"name":           "id",
+						"provider_name":  "registry.terraform.io/hashicorp/random",
+						"schema_version": 0,
+						"type":           "random_id",
+						"values": {
+							"b64_std":     "nGbZSpipMuk=",
+							"b64_url":     "nGbZSpipMuk",
+							"byte_length": 8,
+							"dec":         "11269934031953277673",
+							"hex":         "9c66d94a98a932e9",
+							"id":          "nGbZSpipMuk",
+							"keepers":     null,
+							"prefix":      null,
+						},
+					},
+				],
+			},
+		},
+	},
+	"resource_changes": [
+		{
+			"address": "google_project_iam_audit_config.composer-enable-audit-logging",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"audit_log_config": [
+						{
+							"exempted_members": [],
+							"log_type":         "ADMIN_READ",
+						},
+						{
+							"exempted_members": [],
+							"log_type":         "DATA_READ",
+						},
+						{
+							"exempted_members": [],
+							"log_type":         "DATA_WRITE",
+						},
+					],
+					"project": "vtltd-dev",
+					"service": "composer.googleapis.com",
+				},
+				"after_unknown": {
+					"audit_log_config": [
+						{
+							"exempted_members": [],
+						},
+						{
+							"exempted_members": [],
+						},
+						{
+							"exempted_members": [],
+						},
+					],
+					"etag": true,
+					"id":   true,
+				},
+				"before": null,
+			},
+			"mode":          "managed",
+			"name":          "composer-enable-audit-logging",
+			"provider_name": "registry.terraform.io/hashicorp/google",
+			"type":          "google_project_iam_audit_config",
+		},
+		{
+			"address": "google_project_iam_audit_config.composer-no-audit-logging",
+			"change": {
+				"actions": [
+					"delete",
+				],
+				"after_unknown": {},
+				"before": {
+					"audit_log_config": [
+						{
+							"exempted_members": [
+								"domain:valence-technologies.com",
+							],
+							"log_type": "DATA_READ",
+						},
+					],
+					"etag":    "BwW6lC13Ps4=",
+					"id":      "vtltd-dev/audit_config/composer.googleapis.com",
+					"project": "vtltd-dev",
+					"service": "composer.googleapis.com",
+				},
+			},
+			"mode":          "managed",
+			"name":          "composer-no-audit-logging",
+			"provider_name": "registry.terraform.io/hashicorp/google",
+			"type":          "google_project_iam_audit_config",
+		},
+		{
+			"address": "random_id.id",
+			"change": {
+				"actions": [
+					"no-op",
+				],
+				"after": {
+					"b64_std":     "nGbZSpipMuk=",
+					"b64_url":     "nGbZSpipMuk",
+					"byte_length": 8,
+					"dec":         "11269934031953277673",
+					"hex":         "9c66d94a98a932e9",
+					"id":          "nGbZSpipMuk",
+					"keepers":     null,
+					"prefix":      null,
+				},
+				"after_unknown": {},
+				"before": {
+					"b64_std":     "nGbZSpipMuk=",
+					"b64_url":     "nGbZSpipMuk",
+					"byte_length": 8,
+					"dec":         "11269934031953277673",
+					"hex":         "9c66d94a98a932e9",
+					"id":          "nGbZSpipMuk",
+					"keepers":     null,
+					"prefix":      null,
+				},
+			},
+			"mode":          "managed",
+			"name":          "id",
+			"provider_name": "registry.terraform.io/hashicorp/random",
+			"type":          "random_id",
+		},
+	],
+	"terraform_version": "0.14.4",
+	"variables": {
+		"branchname": {
+			"value": "master",
+		},
+		"name_prefix": {
+			"value": "sentinel",
+		},
+		"project": {
+			"value": "vtltd-dev",
+		},
+		"region": {
+			"value": "us-west2",
+		},
+		"zone": {
+			"value": "us-west2-a",
+		},
+	},
+}

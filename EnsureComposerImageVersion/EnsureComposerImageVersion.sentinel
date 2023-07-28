@@ -1,0 +1,75 @@
+# this policy uses the sentinel tfplan/v2 import for terraform
+/*import "tfplan/v2" as tfplan
+import "strings"
+import "types"
+
+print (" Policy Validation Rule - Do not allow unapproved images")
+
+allComposerResources = filter tfplan.resource_changes as _, resource_changes {
+	resource_changes.type is "google_composer_environment" and
+	resource_changes.mode is "managed" and
+	resource_changes.change.actions not contains "delete"	
+}
+
+image_version_list = [
+
+]
+
+deny_ConfigBlockMissing = rule {
+	all allComposerResources as _, rc {
+		keys(rc.change.after) contains "config"
+	}
+}
+
+deny_SoftwareConfigBlockMissing = rule when deny_ConfigBlockMissing is true {
+	all allComposerResources as _, rc {
+		all rc.change.after.config as _, sp {
+			keys(sp) contains "software_config"
+		}
+	}
+}
+
+EnsureComposerImageVersion_rule = rule when deny_SoftwareConfigBlockMissing is true {
+	all allComposerResources as _, rc {
+		all rc.change.after.config as _, sp {
+			all sp.software_config as _, ac {
+				ac contains "image_version" and
+					ac.image_version in image_version_list
+			}
+		}
+	}
+}
+
+v = strings.split(tfplan.terraform_version, ".")
+version_major = int(v[1])
+version_minor = int(v[2])
+
+main = rule {
+	deny_ConfigBlockMissing and
+	deny_SoftwareConfigBlockMissing and
+	EnsureComposerImageVersion_rule and
+	version_major >= 13 and
+	version_minor >= 0
+}
+*/
+##### EnsureComposerImageVersion
+
+import "tfplan-functions" as plan
+
+attr = "config.0.software_config.0.image_version"
+
+image_version_list = ["composer-1.14.2-airflow-1.10.14"]
+
+allComposerResources = plan.find_resources("google_composer_environment")
+
+violatingimage_version_list =
+plan.filter_attribute_not_in_list(allComposerResources,
+  attr,image_version_list, true)
+
+ violations = length(violatingimage_version_list["messages"])
+
+ # Main rule
+main = rule {
+violations is 0
+
+}

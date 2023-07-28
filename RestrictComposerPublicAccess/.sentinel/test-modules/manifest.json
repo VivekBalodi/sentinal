@@ -1,0 +1,16 @@
+{
+	"records": [
+		{
+			"key": "test\\RestrictComposerPublicAccess\\fail\\tfplan-functions",
+			"source": "../../../governance/third-generation/common-functions/tfplan-functions/tfplan-functions.sentinel",
+			"sourceSum": "",
+			"dest": "E:/Download/testing-sentinel/Composer/governance/third-generation/common-functions/tfplan-functions/tfplan-functions.sentinel"
+		},
+		{
+			"key": "test\\RestrictComposerPublicAccess\\success\\tfplan-functions",
+			"source": "../../../governance/third-generation/common-functions/tfplan-functions/tfplan-functions.sentinel",
+			"sourceSum": "",
+			"dest": "E:/Download/testing-sentinel/Composer/governance/third-generation/common-functions/tfplan-functions/tfplan-functions.sentinel"
+		}
+	]
+}

@@ -1,0 +1,10 @@
+{
+  "mock": {
+    "tfplan/v2": "mock-tfplan-v2-failure.sentinel",
+    "tfconfig/v2": "mock-tfconfigv2-failure.sentinel"
+  },
+  "test": {
+    "main": false
+  }
+  
+ }

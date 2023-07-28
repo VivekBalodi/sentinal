@@ -1,0 +1,111 @@
+/*# this policy uses the sentinel tfplan/v2 import for terraform
+import "tfplan/v2" as tfplan
+import "strings"
+import "types"
+
+print ("Policy Validation Rule - Block disallowed IP addresses")
+
+ allowed_ip_range_list = [
+
+]
+
+allComposerResources = filter tfplan.resource_changes as _, resource_changes {
+	resource_changes.type is "google_composer_environment" and
+	resource_changes.mode is "managed" and
+	resource_changes.change.actions not contains "delete"	
+}
+
+deny_ConfigBlockMissing = rule {
+	all allComposerResources as _, rc {
+		keys(rc.change.after) contains "config"
+	}
+}
+
+deny_WebNACNotEnabled = rule {
+	all allComposerResources as _, rc {
+		all rc.change.after.config as _, sp {
+			keys(sp) contains "web_server_network_access_control"
+		}
+	}
+}
+
+EnsureComposerAllowedIps_rule = rule when deny_WebNACNotEnabled is true {
+	all allComposerResources as _, rc {
+		all rc.change.after.config as _, sp {
+			all sp.web_server_network_access_control as _, ac {
+				all ac.allowed_ip_range as _, ir {
+					ir.value in allowed_ip_range_list
+				}
+			}
+		}
+	}
+}
+
+v = strings.split(tfplan.terraform_version, ".")
+version_major = int(v[1])
+version_minor = int(v[2])
+
+# the main rule calls the policy rule(s) and evaluates the final sentinel results
+main = rule {
+	deny_WebNACNotEnabled and
+	EnsureComposerAllowedIps_rule and
+	version_major >= 13 and
+	version_minor >= 0
+}
+*/
+
+import "tfplan-functions" as plan
+
+
+
+#attrConfig = "values.0.config"
+allowed_ip_range_list = ["192.0.0.1/24","192.0.0.1/24","192.0.0.1/24","10.0.0.0/8"]
+
+
+attrWebNAC = "config.0.web_server_network_access_control.0.allowed_ip_range.0.value"
+
+allComposerResources = plan.find_resources("google_composer_environment")
+
+violatingallowed_ip_range_list =
+plan.filter_attribute_not_in_list(allComposerResources,
+  attrWebNAC,allowed_ip_range_list, true)
+
+ violations = length(violatingallowed_ip_range_list["messages"])
+
+ v = strings.split(tfplan.terraform_version, ".")
+ v_major = int(v[1])
+
+# Main rule
+main = rule {
+violations is 0
+
+}
+
+
+
+
+
+/*
+
+#_value = ["serviceAccount:terraform@vtltd-dev.iam.gserviceaccount.com"]
+_value = ["allowed_ip_range_list"]
+_deny_WebNACNotEnabled = true
+
+
+//  _value = [] is empty
+#_deny_WebNACNotEnabled = false
+
+
+
+for allAccessContextMgrALs as address, rc {
+	print("inside")
+	print(plan.to_string(attrConfig) + " has value: " + plan.to_string(plan.evaluate_attribute(rc, attrConfig)))
+	print(plan.to_string(attrWebNAC) + " has value: " + plan.to_string(plan.evaluate_attribute(rc, attrWebNAC)))
+} 
+
+# Main rule
+main = rule {
+   _deny_WebNACNotEnabled
+}
+
+*/

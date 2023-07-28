@@ -1,0 +1,26 @@
+import "tfplan/v2" as tfplan
+import "tfconfig/v2" as tfconfig
+import "strings"
+import "types"
+
+v = strings.split(tfplan.terraform_version, ".")
+version_major = int(v[1])
+version_minor = int(v[2])
+
+print (" Policy validation rule - Do  not allow cloud composer launch with out CMEK")
+
+main = rule {
+	all filter tfplan.resource_changes as _, resource_changes {
+		resource_changes.type is "google_composer_environment" and
+			resource_changes.mode is "managed" and
+			(resource_changes.change.actions contains "create" or
+				resource_changes.change.actions is ["update"])
+	} as _, resource_changes {
+		tfconfig.resources[strings.split(resource_changes.address, "[")[0]].config.config[0] contains "encryption_config"  and 
+		tfconfig.resources[strings.split(resource_changes.address, "[")[0]].config.config[0].encryption_config[0] contains "kms_key_name" and  
+		(tfconfig.resources[strings.split(resource_changes.address, "[")[0]].config.config[0].encryption_config[0].kms_key_name contains "references" or
+		tfconfig.resources[strings.split(resource_changes.address, "[")[0]].config.config[0].encryption_config[0].kms_key_name contains "constant_value")	
+	} and
+	version_major >= 13 and
+	version_minor >= 0
+}

@@ -1,0 +1,73 @@
+/*# this policy uses the sentinel tfplan/v2 import for terraform
+/*import "tfplan/v2" as tfplan
+import "strings"
+import "types"
+
+# this section will get all resource changes for this terraform resource and filter for updated or created actions
+allAuditLoggingResources = filter tfplan.resource_changes as _, resource_changes {
+	resource_changes.type is "google_project_iam_audit_config" and
+		resource_changes.mode is "managed" and
+		(resource_changes.change.actions contains "create" or
+			resource_changes.change.actions is ["update"])
+}
+
+print ("Policy Validation Rule - Ensure Audit logging is enabled for Cloud Composer.")
+
+log_type = "ADMIN_READ"
+log_setting = []
+
+# the policy rule is used to control the resource changes for a specific key and value pair (see mock to validate pair)
+for allAuditLoggingResources as _, rc {
+    for rc.change.after.audit_log_config as _, dc {
+        v = dc.log_type
+        append(log_setting, v)
+    }
+}
+
+EnsureAuditLoggingEnabled_rule = rule {
+	all allAuditLoggingResources as _, rc {
+		rc.change.after.service is "composer.googleapis.com"
+	}
+}
+
+print("The following Audit log types were set", log_setting)
+
+# the version rule determines the minimum allowed terraform version(s) to be used for the terraform plan
+v = strings.split(tfplan.terraform_version, ".")
+version_major = int(v[1])
+version_minor = int(v[2])
+
+# the main rule calls the policy rule(s) and evaluates the final sentinel results
+main = rule {
+	(log_type in log_setting) and
+	EnsureAuditLoggingEnabled_rule and
+	version_major >= 13 and
+	version_minor >= 0
+}
+*/
+##### Not in scope
+
+import "tfplan-functions" as plan
+
+
+allAuditLoggingResources = plan.find_resources("google_project_iam_audit_config")
+
+attr = "audit_log_config.log_type"
+_log_type = "ADMIN_READ"
+
+violatinglog_type = plan.filter_attribute_not_contains_log_type(allAuditLoggingResources, attr, log_type, true)
+
+ violations = length(violatinglog_type["messages"])
+# _exempted_members_validated = true
+
+# _exempted_members = plan.filter_attribute_not_in_list(allAuditLoggingResources, attr, _log_type, true)
+
+# #  if _exempted_members != _valu
+# # _exempted_members_validated = false
+
+
+# Main rule
+main = rule {
+violations is 0
+
+}

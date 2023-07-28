@@ -1,0 +1,10 @@
+{
+    "mock": {
+      "tfplan/v2": "mock-tfplan-success.sentinel"
+    },
+    "test": {
+      "main": true
+    }
+  }
+  
+  

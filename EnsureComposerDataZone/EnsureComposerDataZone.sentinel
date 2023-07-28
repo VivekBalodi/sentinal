@@ -1,0 +1,85 @@
+/*# this policy uses the sentinel tfplan/v2 import for terraform
+import "tfplan/v2" as tfplan
+import "strings"
+import "types"
+
+# this section will get all resource changes for this terraform resource and filter for updated or created actions
+allComposerResources = filter tfplan.resource_changes as _, resource_changes {
+	resource_changes.type is "google_composer_environment" and
+		resource_changes.mode is "managed" and
+		(resource_changes.change.actions contains "create" or
+			resource_changes.change.actions is ["update"])
+}
+print (" Policy Validation Rule - Do not allow Cloud Composer and data to be located outside approved geographical voundaries")
+
+ zone_list = [
+	"us-east1",
+	"uk-east1",
+	"us-central1-a",
+	"us-east1-b",
+]
+
+deny_ConfigBlockMissing = rule {
+	all allComposerResources as _, rc {
+		keys(rc.change.after) contains "config"
+	}
+}
+
+deny_NodeConfigBlockMissing = rule when deny_ConfigBlockMissing is true {
+	all allComposerResources as _, rc {
+		all rc.change.after.config as _, sp {
+			keys(sp) contains "node_config"
+		}
+	}
+}
+
+EnsureComposerDataZone_rule = rule when deny_NodeConfigBlockMissing is true {
+	all allComposerResources as _, rc {
+		all rc.change.after.config as _, sp {
+			all sp.node_config as _, ac {
+				ac.zone in zone_list
+			}
+		}
+	}
+}
+
+v = strings.split(tfplan.terraform_version, ".")
+version_major = int(v[1])
+version_minor = int(v[2])
+
+# the main rule calls the policy rule(s) and evaluates the final sentinel results
+main = rule {
+	deny_ConfigBlockMissing and
+	deny_NodeConfigBlockMissing and
+	EnsureComposerDataZone_rule and
+	version_major >= 13 and
+	version_minor >= 0
+}
+*/
+#not in scope
+
+
+#EnsureComposerDataZone
+import "tfplan-functions" as plan
+
+ zone_list = ["us-east1","uk-east1","us-central1-a","us-east1-b"]
+
+ attr = "config.0.node_config.0.zone"
+
+ allComposerResources = plan.find_resources("google_composer_environment")
+
+
+violatingzone_list =
+plan.filter_attribute_not_in_list(allComposerResources,
+  attr,zone_list, true)
+
+#count violations
+ violations = length(violatingzone_list["messages"])
+
+ print("Policy Validation Rule -  must be assigned to an authorized zone")
+
+ # Main rule
+main = rule {
+violations is 0
+
+}
